@@ -1,4 +1,6 @@
-<div class="container">
+<script src="<?= base_url(); ?>src/js/login.js"></script>
+
+<div class="container signin">
 
     <form class="form-signin">
         <h2 class="form-signin-heading">Please sign in</h2>
@@ -14,4 +16,8 @@
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
 
-</div> <!-- /container -->
+</div>
+
+<script>
+$(document).ready(login.init());
+</script>

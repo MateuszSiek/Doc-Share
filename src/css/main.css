@@ -33,3 +33,7 @@ body {
     color: #777;
     margin: 20px 20px 20px 20px;
 }
+
+.container.signin{
+    width: 400px;
+}
