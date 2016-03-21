@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+$config['upload_path'] = "/var/www/html/uploads/";
 /*
 |--------------------------------------------------------------------------
 | Base Site URL
