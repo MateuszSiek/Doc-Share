@@ -44,8 +44,8 @@ class User extends CI_Controller {
             $stream['error'] = 1;
             $stream['msg'] = 'No rights';
         } else if ($result) {
-            if (!$result['active']) {
-                $this->user_model->activate_and_add($result['id'], $group_id, $login);
+            if (!$result[0]['active']) {
+                $this->user_model->activate_and_add($result[0]['id'], $group_id, $login);
             } else {
                 $stream['error'] = 1;
                 $stream['msg'] = 'User associated with this email or login already bellongs to a group';
@@ -55,11 +55,17 @@ class User extends CI_Controller {
             $stream['msg'] = 'Please use gmail.com domain';
         } else {
             $keys = array_merge(range(0, 9), range('a', 'z'));
+            $password = '';
             $code = '';
             for ($i = 0; $i < 20; $i++) {
                 $code .= $keys[array_rand($keys)];
             }
-            $data['verification_code'] = $code;
+            for ($i = 0; $i < 10; $i++) {
+                $password .= $keys[array_rand($keys)];
+            }
+//            $data['rights'] = 'user';
+            $data['group_id'] = $group_id;
+            $data['password'] = $password;
             unset($data['password_repeat']);
 
             if (!$this->send_email($data)) {
@@ -71,18 +77,6 @@ class User extends CI_Controller {
         }
 
         echo json_encode($stream);
-    }
-
-    public function verify($login, $code) {
-        $this->load->library('parser');
-        if ($this->user_model->verify_user($login, $code)) {
-            $data['head'] = $this->load->view('head', '', TRUE);
-            $view_data['user'] = $this->session->userdata;
-            $data['header'] = '';
-            $data['content'] = $this->load->view('registration_success', '', TRUE);
-            $data['footer'] = $this->load->view('footer', '', TRUE);
-            $this->parser->parse('template', $data);
-        }
     }
 
     private function send_email($data) {

@@ -80,7 +80,7 @@ class User_model extends CI_Model {
         $this->db->or_where('username', $login); 
 
         $query = $this->db->get();
-        return $query->result_array()[0];
+        return $query->result_array();
     }
 
 }
