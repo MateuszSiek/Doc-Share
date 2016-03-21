@@ -45,7 +45,7 @@ $curr_user_id = $current_user['id'];
                 </tbody>
             </table>
         </div>
-        <?php if ($is_admin): ?>
+        <?php  if ($is_admin && $key <=2): ?>
             <div class="container">
                 <p>Add user:</p>
                 <form class="form-inline add-user-form">
