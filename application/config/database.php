@@ -75,9 +75,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => 'root',
+	'hostname' => 'doc-share-database.cejgcxl3ohj8.eu-west-1.rds.amazonaws.com',
+	'username' => 'db_user',
+	'password' => 'mathew22',
 	'database' => 'doc_share',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
