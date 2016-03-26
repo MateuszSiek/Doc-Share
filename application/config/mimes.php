@@ -163,5 +163,6 @@ return array(
 	'vcf'	=>	'text/x-vcard',
 	'srt'	=>	array('text/srt', 'text/plain'),
 	'vtt'	=>	array('text/vtt', 'text/plain'),
+	'latex'	=>	array('text/vtt', 'text/plain'),
 	'ico'	=>	array('image/x-icon', 'image/x-ico', 'image/vnd.microsoft.icon')
 );
