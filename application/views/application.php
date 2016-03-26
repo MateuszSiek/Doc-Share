@@ -75,7 +75,7 @@ $curr_user_id = $current_user['id'];
                                 <th width = "7px"></th>
                                 <th>#</th>
                                 <th>File title</th>
-                                <th>File size[mb]</th>
+                                <th>File size[kB]</th>
                                 <th></th>
                                 <th></th>
                             </tr>

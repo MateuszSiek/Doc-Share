@@ -5,19 +5,7 @@ if (!defined('BASEPATH'))
 
 class File_model extends CI_Model {
 
-    function add_file($file_data) {
-        $session_data = $this->session->userdata('logged_in');
-        $user_id = $session_data["id"];
-        
-        $data = array(
-            'filename' => $file_data['file_name'],
-            'file_size' => $file_data['file_size']/1000,
-            'title' => $file_data['file_title'],
-            'file_type' => $file_data['file_type'],
-            'group_id' => $file_data['group_id'],
-            'user_id' => $user_id
-        );
-
+    function add_file($data) {
         $this->db->insert('files', $data);
         $insert_id = $this->db->insert_id();
         return $insert_id;

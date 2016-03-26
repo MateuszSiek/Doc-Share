@@ -1,41 +1,62 @@
 <?php
 
+if (!class_exists('S3'))
+    require_once('S3.php');
+
 class File extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
         $this->load->helper(array('form', 'url'));
         $this->load->model('file_model');
+        if (!defined('awsAccessKey'))
+            define('awsAccessKey', 'AKIAIIREHW7YTVJ6HCWQ');
+        if (!defined('awsSecretKey'))
+            define('awsSecretKey', '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');
+
+        $this->s3 = new S3(awsAccessKey, awsSecretKey);
+        $s3 = new S3(awsAccessKey, awsSecretKey);
     }
 
     public function do_upload() {
         if (isset($_FILES['userfile'])) {
+            //AWS access info
+
+
+            $file_temp_name = $_FILES['userfile']['tmp_name'];
+
             $config['upload_path'] = './uploads/';
             $config['allowed_types'] = 'pdf|docx|latex';
 
             $file_title = $_FILES['userfile']['name'];
             $file_name = date('Ymd_His');
+            $ext = pathinfo($file_title, PATHINFO_EXTENSION);
 
             $keys = array_merge(range(0, 9), range('a', 'z'));
             for ($i = 0; $i < 10; $i++) {
                 $file_name .= $keys[array_rand($keys)];
             }
-            $config['file_name'] = $file_name;
-            $config['overwrite'] = false;
-
-            $this->load->library('upload', $config);
+            $file_name.='.' . $ext;
 
             $stream = array();
-            if (!$this->upload->do_upload('userfile')) {
+
+            if (!$this->s3->putObjectFile($file_temp_name, "doc-share-bucket", $file_name, S3::ACL_PUBLIC_READ)) {
                 $stream['error_msg'] = $this->upload->display_errors();
                 $error = 1;
             } else {
+//                $s3->putObjectFile($file_name, $bucket, $uri);
+
+
                 $session_data = $this->session->userdata('logged_in');
-                
-                $data = $this->upload->data();
-                $data['file_title'] = $file_title;
-                $data['file_type'] = $data['file_ext'];
-                $data['group_id'] = $session_data['group_id'];
+
+                $data = array(
+                    'filename' => $file_name,
+                    'file_size' => $_FILES['userfile']['size'] / 1000,
+                    'title' => $file_title,
+                    'file_type' => $ext,
+                    'group_id' => $session_data['group_id'],
+                    'user_id' => $session_data["id"]
+                );
 
                 $file_id = $this->file_model->add_file($data);
                 $stream['file_id'] = $file_id;
@@ -58,10 +79,7 @@ class File extends CI_Controller {
         $file = $this->file_model->get_files($file_id);
 
         if ($file) {
-            if (unlink($upload_path . $file[0]->filename)) {
-                foreach (glob($upload_path . explode('.', $file[0]->filename)[0] . '*') as $filename) {
-                    unlink($filename);
-                }
+            if ($this->s3->deleteObject("doc-share-bucket", $file[0]->filename)) {
                 $this->file_model->delete_file($file_id);
                 $error = 0;
             }
@@ -84,7 +102,8 @@ class File extends CI_Controller {
         $this->load->helper('download');
 
         if ($file) {
-            $data = file_get_contents($upload_path . $file[0]->filename); // Read the file's contents
+            $data = file_get_contents("https://s3-eu-west-1.amazonaws.com/doc-share-bucket/" . $file[0]->filename); // Read the file's contents
+           
             $name = $file[0]->title;
             force_download($name, $data);
         } else {
